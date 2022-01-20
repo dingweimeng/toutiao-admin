@@ -5,15 +5,21 @@
         <img src="./yj.png" class="login_img" />
       </div> -->
       <h2>黑马头条后台管理系统</h2>
-      <el-form :model="user" class="login_form">
+      <!-- form 表单 -->
+      <el-form
+        :model="user"
+        :rules="FormRules"
+        ref="login-form"
+        class="login_form"
+      >
         <el-form-item prop="mobile">
           <el-input v-model="user.mobile" placeholder="请输入手机号"></el-input>
         </el-form-item>
         <el-form-item prop="code">
           <el-input v-model="user.code" placeholder="请输入验证码"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-checkbox v-model="checked"
+        <el-form-item prop="agree">
+          <el-checkbox v-model="user.agree"
             ><span>我已阅读并同意用户协议和隐私条款</span></el-checkbox
           >
         </el-form-item>
@@ -33,6 +39,7 @@
 
 <script>
 import request from '@/utils/request.js'
+import { Login } from '@/api/user.js'
 
 export default {
   name: 'LoginIndex',
@@ -43,9 +50,42 @@ export default {
       user: {
         mobile: '13911111111', //手机号
         code: '246810', //验证码
+        agree: false, //我已阅读并同意用户协议和隐私条款
       },
-      checked: true, //我已阅读并同意用户协议和隐私条款
-      loginLoading: false,
+
+      loginLoading: false, //loading
+      // 表单验证
+      FormRules: {
+        mobile: [
+          { required: true, message: '请输入手机号 ', trigger: 'blur' },
+          {
+            pattern: /^1[3|4|5|6|7|8|9]\d{9}$/,
+            message: '请输入正确手机号格式',
+            trigger: 'blur',
+          },
+        ],
+        code: [
+          { required: true, message: '请输入验证码 ', trigger: 'blur' },
+          {
+            pattern: /^\d{6}$/,
+            message: '请输入正确验证码格式',
+            trigger: 'blur',
+          },
+        ],
+        agree: [
+          // 自定义校验 判断value 是true 的话 callback 放行
+          {
+            validator: (rule, value, callback) => {
+              if (value) {
+                callback()
+              } else {
+                callback(new Error('请同意用户协议'))
+              }
+            },
+            trigger: 'change',
+          },
+        ],
+      },
     }
   },
   computed: {},
@@ -53,22 +93,32 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    // 登录
-    async onLogin() {
+    // 登录按钮
+    onLogin() {
+      // 预校验
+      this.$refs['login-form'].validate((valid) => {
+        if (!valid) {
+          return
+        }
+        //  通过了 执行请求调接口
+        this.login()
+      })
+    },
+    // 调接口
+    async login() {
       // 开启loading
       this.loginLoading = true
-      const data = await request({
-        method: 'POST',
-        url: '/mp/v1_0/authorizations',
-        data: this.user,
-      })
-      console.log(data)
+      const data = await Login(this.user)
+      // console.log(data)
       if (data.status !== 201) {
         return this.$message.error('登录失败')
       }
+
       this.$message.success('登录成功')
       // 关闭loading
       this.loginLoading = false
+      // 跳转页面
+      this.$router.push('/')
     },
   },
 }

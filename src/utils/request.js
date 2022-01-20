@@ -3,7 +3,7 @@ import axios from 'axios'
 
 
 const request = axios.create({
-
+    //   基础路径
     baseURL: 'http://api-toutiao-web.itheima.net'
 })
 
