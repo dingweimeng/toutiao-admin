@@ -16,17 +16,44 @@ const routes = [
         path: '/',
         component: () =>
             import ('@/views/layout/index.vue'),
-        children: [{
-            path: '', // 默认为空 就是子路由 相当于 重定向
-            name: 'home',
-            component: () =>
-                import ('@/views/home/index.vue')
-        }]
+        children: [
+            // 默认为空 就是子路由 相当于 重定向
+            {
+                path: '',
+                name: 'Home',
+                component: () =>
+                    import ('@/views/home/index.vue')
+            },
+            {
+                path: '/article',
+                nama: 'Article',
+                component: () =>
+                    import ('@/views/article/index.vue')
+            }
+        ]
     }
 ]
 
 const router = new VueRouter({
     routes
+})
+
+
+// 路由前置守卫
+router.beforeEach((to, from, next) => {
+    const user = JSON.parse(window.localStorage.getItem('user'))
+    if (to.path !== '/login') {
+        // 判断是否登录
+        if (user) {
+            next()
+        } else {
+            next('/login')
+        }
+    } else {
+        // 是登录页面 放行
+        next()
+    }
+
 })
 
 export default router

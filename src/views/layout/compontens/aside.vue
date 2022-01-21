@@ -6,6 +6,8 @@
     text-color="#fff"
     active-text-color="#ffd04b"
     router
+    :collapse="iscollapse"
+    :collapse-transition="false"
   >
     <el-menu-item index="/">
       <i class="el-icon-s-home"></i>
@@ -43,7 +45,7 @@
 export default {
   name: 'AppAside',
   components: {},
-  props: {},
+  props: ['iscollapse'], // [] 样式不能用驼峰
   data() {
     return {}
   },

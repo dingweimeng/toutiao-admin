@@ -1,5 +1,8 @@
 // // 登录相关请求模块
 import request from '@/utils/request.js'
+// Body 参数使用data 设置
+// Query 参数使用 params 设置
+// Headers 参数使用 headers 设置
 
 // 登录
 export const Login = (data) => {
@@ -16,8 +19,5 @@ export const getUserProfile = () => {
     return request({
         method: 'GET',
         url: '/mp/v1_0/user/profile',
-        headers: {
-            Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzQxNDc0MDYsInVzZXJfaWQiOjEsInJlZnJlc2giOmZhbHNlLCJ2ZXJpZmllZCI6dHJ1ZX0.fKrDkZl72LoJ1p27wIb79RobIUqgkxwQQUumU8lK_mY'
-        }
     })
 }

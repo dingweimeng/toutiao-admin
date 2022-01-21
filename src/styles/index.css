@@ -4,3 +4,17 @@
 
 
 /* 全局样式 */
+
+
+/* 卡片视图 */
+
+.el-card {
+    margin-bottom: 20px;
+}
+
+
+/* 分页器 */
+
+.el-pagination {
+    margin-top: 20px;
+}

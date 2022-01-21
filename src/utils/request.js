@@ -10,7 +10,15 @@ const request = axios.create({
 
 
 //  请求拦截器
-
+request.interceptors.request.use(function(config) {
+    // 拿到tuken 对象
+    const user = JSON.parse(window.localStorage.getItem('user'))
+        // 如果有登录用户信息 则统一设置token
+    if (user) {
+        config.headers.Authorization = `Bearer ${user.token}`
+    }
+    return config
+})
 
 
 // 相应拦截器

@@ -105,20 +105,27 @@ export default {
       })
     },
     // 调接口
-    async login() {
+    login() {
       // 开启loading
       this.loginLoading = true
-      const data = await Login(this.user)
-      // console.log(data)
-      if (data.status !== 201) {
-        return this.$message.error('登录失败')
-      }
-
-      this.$message.success('登录成功')
-      // 关闭loading
-      this.loginLoading = false
-      // 跳转页面
-      this.$router.push('/')
+      Login(this.user)
+        .then((res) => {
+          // console.log(res)
+          // 登录成功
+          this.$message.success('登录成功')
+          // 关闭loading
+          this.loginLoading = false
+          // 存token
+          window.localStorage.setItem('user', JSON.stringify(res.data.data))
+          // 跳转页面
+          this.$router.push('/')
+        })
+        .catch((error) => {
+          console.log(error)
+          this.$message.error('登录失败，手机号或验证码错误')
+          // 关闭loading
+          this.loginLoading = false
+        })
     },
   },
 }
