@@ -3,6 +3,8 @@ import request from '@/utils/request.js'
 // Body 参数使用data 设置
 // Query 参数使用 params 设置
 // Headers 参数使用 headers 设置
+// 路径id :xxx 格式 用es6  拼接url 后面
+
 
 // 登录
 export const Login = (data) => {
