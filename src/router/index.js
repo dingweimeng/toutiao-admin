@@ -29,6 +29,12 @@ const routes = [
                 nama: 'Article',
                 component: () =>
                     import ('@/views/article/index.vue')
+            },
+            {
+                path: '/publish',
+                nama: 'pblish',
+                component: () =>
+                    import ('@/views/pblish/index.vue')
             }
         ]
     }

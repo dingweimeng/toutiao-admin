@@ -112,6 +112,7 @@
               icon="el-icon-edit"
               type="primary"
               circle
+              @click="$router.push('/publish?id=' + scope.row.id.toString())"
             ></el-button>
             <!-- 删除按钮 -->
             <el-button
