@@ -35,6 +35,12 @@ const routes = [
                 nama: 'pblish',
                 component: () =>
                     import ('@/views/pblish/index.vue')
+            },
+            {
+                path: '/image',
+                nama: 'image',
+                component: () =>
+                    import ('@/views/image/index.vue')
             }
         ]
     }

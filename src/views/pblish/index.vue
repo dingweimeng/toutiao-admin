@@ -10,13 +10,25 @@
         </el-breadcrumb>
       </div>
       <!-- 下部分 -->
-      <el-form ref="form" :model="article" label-width="50px">
-        <el-form-item label="标题">
+      <el-form
+        ref="publish-form"
+        :model="article"
+        :rules="formRules"
+        label-width="60px"
+      >
+        <el-form-item label="标题" prop="title">
           <el-input v-model="article.title"></el-input>
         </el-form-item>
 
-        <el-form-item label="内容">
-          <el-input type="textarea" v-model="article.content"></el-input>
+        <el-form-item label="内容" prop="content">
+          <!-- <el-input type="textarea" v-model="article.content"></el-input> -->
+          <el-tiptap
+            lang="zh"
+            v-model="article.content"
+            :extensions="extensions"
+            height="350"
+            placeholder="请输入文章内容"
+          ></el-tiptap>
         </el-form-item>
 
         <el-form-item label="封面">
@@ -28,7 +40,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="频道">
+        <el-form-item label="频道" prop="channel_id">
           <el-select v-model="article.channel_id" placeholder="请选择频道">
             <el-option
               v-for="(channel, index) in channels"
@@ -52,15 +64,47 @@
 </template>
 
 <script>
+// 引入富文本插件
+import {
+  ElementTiptap,
+  Doc,
+  Text,
+  Paragraph,
+  Heading,
+  Bold,
+  Underline,
+  Italic,
+  Image,
+  Strike,
+  ListItem,
+  BulletList,
+  OrderedList,
+  TodoItem,
+  TodoList,
+  HorizontalRule,
+  Fullscreen,
+  Preview,
+  CodeBlock,
+  TextColor,
+} from 'element-tiptap'
+// 富文本样式
+import 'element-tiptap/lib/index.css'
+
+// 封装的api接口
 import {
   getArticlesChannels,
   addArticle,
   getArticle,
   updateArticle,
 } from '@/api/article.js'
+
+// 图片接口封装
+import { uploadImage } from '@/api/image.js'
 export default {
   name: 'PblishIndex',
-  components: {},
+  components: {
+    'el-tiptap': ElementTiptap,
+  },
   props: {},
   data() {
     return {
@@ -79,6 +123,82 @@ export default {
       },
       // 请求回来的文章频道
       channels: [],
+      // 富文本
+      extensions: [
+        // 前面3个必须有
+        new Doc(),
+        new Text(),
+        new Paragraph(),
+        // 最多有几级标题
+        new Heading({ level: 5 }),
+        // 在气泡菜单中渲染菜单按钮
+        new Bold({ bubble: true }),
+        //图片特殊
+        new Image({
+          // 默认会把图片生成base64，字符串和内容储存在一起
+          uploadRequest(file) {
+            // 数据接口要求Content-Type	multipart/form-data，则请求题必须使用 FormData
+            const fd = new FormData()
+            fd.append('image', file)
+            // 第一个return 是返回Promise 对象
+            return uploadImage(fd).then((res) => {
+              console.log(res)
+              // 这个return 是返回最后的结果
+              return res.data.data.url
+            })
+          },
+        }),
+        // 下划线
+        new Underline(),
+        // 斜体
+        new Italic(),
+        // 删除线
+        new Strike(),
+        // 华丽的分割线
+        new HorizontalRule(),
+        new ListItem(),
+        // 无序列表
+        new BulletList(),
+        // 有序列表
+        new OrderedList(),
+        new TodoItem(),
+        new TodoList(),
+        //全屏
+        new Fullscreen(),
+        // 预览
+        new Preview(),
+        //文本块 代码块
+        new CodeBlock(),
+        //颜色
+        new TextColor(),
+      ],
+      // 表单验证正则
+      formRules: {
+        title: [
+          { required: true, message: '请输入文章标题', trigger: 'blur' },
+          {
+            min: 5,
+            max: 30,
+            message: '长度在 5 到 30 个字符',
+            trigger: 'blur',
+          },
+        ],
+        content: [
+          {
+            validator(rule, value, callback) {
+              if (value === '<p></p>') {
+                // 代表没有内容 只有空标签
+                callback(new Error('请输入文章内容'))
+              } else {
+                // 验证通过
+                callback()
+              }
+            },
+          },
+          { required: true, message: '请选择文章内容' },
+        ],
+        channel_id: [{ required: true, message: '请选择频道' }],
+      },
     }
   },
   computed: {},
@@ -102,22 +222,32 @@ export default {
     },
     // 发布按钮
     onPblish(draft = false) {
-      //  如果是修改文章,则执行修改操作,否则执行添加操作
-      if (this.$route.query.id) {
-        //  执行修改文章
-        updateArticle(this.$route.query.id, this.article, draft).then((res) => {
-          this.$message.success(`${draft ? '存入草稿' : '修改'}成功`)
-          // 跳转页码
-          this.$router.push('/article')
-        })
-      } else {
-        //  执行添加操作
-        addArticle(this.article, draft).then((res) => {
-          this.$message.success(`${draft ? '存入草稿' : '发布'}成功`)
-          // 跳转页码
-          this.$router.push('/article')
-        })
-      }
+      // 发布前 先验证表单
+      this.$refs['publish-form'].validate((valid) => {
+        if (!valid) {
+          return
+        }
+        // 验证通过
+
+        //  如果是修改文章,则执行修改操作,否则执行添加操作
+        if (this.$route.query.id) {
+          //  执行修改文章
+          updateArticle(this.$route.query.id, this.article, draft).then(
+            (res) => {
+              this.$message.success(`${draft ? '存入草稿' : '修改'}成功`)
+              // 跳转页码
+              this.$router.push('/article')
+            }
+          )
+        } else {
+          //  执行添加操作
+          addArticle(this.article, draft).then((res) => {
+            this.$message.success(`${draft ? '存入草稿' : '发布'}成功`)
+            // 跳转页码
+            this.$router.push('/article')
+          })
+        }
+      })
     },
 
     // 修改文章中: 加载文章内容

@@ -56,8 +56,14 @@
     <!-- 下部分卡片视图 -->
     <el-card>
       <div slot="header">根据筛选条件共查询到 {{ totalCount }} 条结果:</div>
-      <!--  v-loading="loading"  太卡先关闭 -->
-      <el-table :data="articles" stripe style="width: 100%" class="list-table">
+      <!--   太卡先关闭 -->
+      <el-table
+        :data="articles"
+        stripe
+        style="width: 100%"
+        v-loading="loading"
+        class="list-table"
+      >
         <!-- 封面 -->
         <el-table-column prop="date" label="封面" align="center">
           <template slot-scope="scope">
@@ -125,13 +131,14 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分页器  :disabled="loading"  太卡先关闭 -->
+      <!-- 分页器   太卡先关闭 -->
       <el-pagination
         layout="prev, pager, next"
         background
         :page-size="pageSize"
         :total="totalCount"
         :current-page.sync="page"
+        :disabled="loading"
         @current-change="onCurrentChange"
       />
     </el-card>
@@ -177,7 +184,7 @@ export default {
       // 筛选范围时间日期
       rangeDate: null,
       // 数据加载loading状态
-      // loading: true,   // 太卡 先关闭
+      loading: true, // 太卡 先关闭
     }
   },
   computed: {},
@@ -193,7 +200,7 @@ export default {
     // 获取文章列表
     async loadArticles(page = 1) {
       // 开始加载时候 loading 转圈
-      // this.loading = true    // 太卡 先关闭
+      this.loading = true // 太卡 先关闭
       const { data } = await getArticles({
         page,
         per_page: this.pageSize, // 每页显示多少
@@ -206,7 +213,7 @@ export default {
       this.articles = data.data.results
       this.totalCount = data.data.total_count
       // 加载完成 关闭loading
-      // this.loading = false   // 太卡 先关闭
+      this.loading = false // 太卡 先关闭
     },
     // 监听页码发生变化
     onCurrentChange(page) {
@@ -217,7 +224,7 @@ export default {
     // 获取文章频道
     async loadChannels() {
       const { data } = await getArticlesChannels()
-      console.log(data)
+      // console.log(data)
       this.channels = data.data.channels
     },
 
