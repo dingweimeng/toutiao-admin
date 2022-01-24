@@ -41,6 +41,12 @@ const routes = [
                 nama: 'image',
                 component: () =>
                     import ('@/views/image/index.vue')
+            },
+            {
+                path: '/comment',
+                nama: 'comment',
+                component: () =>
+                    import ('@/views/comment/index.vue')
             }
         ]
     }

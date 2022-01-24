@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import request from '@/utils/request.js'
+// import request from '@/utils/request.js'
 import { Login } from '@/api/user.js'
 
 export default {
