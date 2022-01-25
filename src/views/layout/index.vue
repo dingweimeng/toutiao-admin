@@ -36,6 +36,9 @@
 <script>
 import AppAside from './compontens/aside.vue'
 import { getUserProfile } from '@/api/user.js'
+// 引入全局通信
+import globalBus from '@/utils/global-bus.js'
+
 export default {
   name: 'LayoutIndex',
   components: {
@@ -54,6 +57,12 @@ export default {
   watch: {},
   created() {
     this.loadUserProfile()
+    // 注册自定义事件 (非父子传值)
+    globalBus.$on('update-user', (data) => {
+      // console.log('update-user', data)
+      this.user.name = data.name
+      this.user.photo = data.photo
+    })
   },
   mounted() {},
   methods: {

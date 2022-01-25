@@ -23,3 +23,24 @@ export const getUserProfile = () => {
         url: '/mp/v1_0/user/profile',
     })
 }
+
+
+
+
+// 编辑用户资料
+export const updateUserProfile = (data) => {
+    return request({
+        method: 'PATCH',
+        url: '/mp/v1_0/user/profile',
+        data
+    })
+}
+
+// 编辑用户头像 
+export const udpdateUserPhoto = data => {
+    return request({
+        method: 'PATCH',
+        url: '/mp/v1_0/user/photo',
+        data
+    })
+}

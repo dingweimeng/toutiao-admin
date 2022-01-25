@@ -47,6 +47,12 @@ const routes = [
                 nama: 'comment',
                 component: () =>
                     import ('@/views/comment/index.vue')
+            },
+            {
+                path: '/setting',
+                nama: 'setting',
+                component: () =>
+                    import ('@/views/setting/index.vue')
             }
         ]
     }
