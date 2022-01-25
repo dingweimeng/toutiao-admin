@@ -20,7 +20,9 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </div>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>设置</el-dropdown-item>
+            <el-dropdown-item @click.native="$router.push('/setting')"
+              >设置</el-dropdown-item
+            >
             <!-- 组件默认不识别原生事件,所有需要加 native 修饰符 -->
             <el-dropdown-item @click.native="onLogout">退出</el-dropdown-item>
           </el-dropdown-menu>
@@ -60,6 +62,7 @@ export default {
     // 注册自定义事件 (非父子传值)
     globalBus.$on('update-user', (data) => {
       // console.log('update-user', data)
+      // 对象自己赋值的是引用，会相互形象，所有要对象.属性
       this.user.name = data.name
       this.user.photo = data.photo
     })

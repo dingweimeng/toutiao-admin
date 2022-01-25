@@ -38,6 +38,16 @@
             <el-radio :label="0">无图</el-radio>
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
+          <!-- 文章封面组件 -->
+          <!-- 注意 如果想要在事件处理自定义传参后得到原来的那个事件本身用 $event  -->
+          <template v-if="article.cover.type > 0">
+            <UploadCover
+              v-for="(cover, index) in article.cover.type"
+              :key="cover"
+              :cover-image="article.cover.images[index]"
+              @update-cover="onUpdateCover(index, $event)"
+            ></UploadCover>
+          </template>
         </el-form-item>
 
         <el-form-item label="频道" prop="channel_id">
@@ -87,8 +97,11 @@ import {
   CodeBlock,
   TextColor,
 } from 'element-tiptap'
+
 // 富文本样式
 import 'element-tiptap/lib/index.css'
+// 封面组件
+import UploadCover from './components/upload-cover.vue'
 
 // 封装的api接口
 import {
@@ -104,6 +117,7 @@ export default {
   name: 'PblishIndex',
   components: {
     'el-tiptap': ElementTiptap,
+    UploadCover,
   },
   props: {},
   data() {
@@ -256,6 +270,13 @@ export default {
       const res = await getArticle(this.$route.query.id)
       console.log(res)
       this.article = res.data.data
+    },
+
+    // 子给父传来的图片地址
+    onUpdateCover(index, url) {
+      // console.log(index, url)
+      // 拿到图片路径 赋值
+      this.article.cover.images[index] = url
     },
   },
 }

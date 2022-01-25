@@ -53,6 +53,12 @@ const routes = [
                 nama: 'setting',
                 component: () =>
                     import ('@/views/setting/index.vue')
+            },
+            {
+                path: '/fans',
+                name: 'fans',
+                component: () =>
+                    import ('@/views/fans/index.vue')
             }
         ]
     }
