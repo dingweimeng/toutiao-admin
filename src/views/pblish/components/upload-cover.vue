@@ -1,12 +1,20 @@
 <template>
   <div class="upload-cover" @click="shouCoverSelect">
     <div class="cover-weap">
-      <img class="cover-image" ref="cover-image" :src="coverImage" />
+      <img class="cover-image" ref="cover-image" :src="value" />
     </div>
     <!-- 弹出层 -->
     <el-dialog title="选择封面" :visible.sync="dialogVisible" append-to-body>
       <el-tabs v-model="activeName" type="card">
-        <el-tab-pane label="素材库" name="first">素材库</el-tab-pane>
+        <el-tab-pane label="素材库" name="first">
+          <!-- 调用封装从用的组件 -->
+          <imageList
+            :isShowAdd="false"
+            :isShowAction="false"
+            isShowSelected
+            ref="image-list"
+          ></imageList>
+        </el-tab-pane>
         <el-tab-pane label="上传图片" name="second">
           <input type="file" ref="file" @change="onFileChange" />
           <img ref="preview-image" width="150px" height="120px" />
@@ -22,10 +30,14 @@
 
 <script>
 import { uploadImage } from '@/api/image.js'
+// 引入封装好从用的组件
+import imageList from '@/views/image/components/image-list.vue'
 export default {
   name: 'UploadCover',
-  components: {},
-  props: ['cover-image'],
+  components: { imageList },
+  // props: ['cover-image'],
+  props: ['value'],
+
   data() {
     return {
       // 控制弹出框的显示隐藏
@@ -69,7 +81,20 @@ export default {
         // 展示上传的图片
         this.$refs['cover-image'].src = res.data.data.url
         // 展示后，需要将图片地址发送给父组件   父给子传值 $emit
-        this.$emit('update-cover', res.data.data.url)
+        this.$emit('input', res.data.data.url)
+      } else if (this.activeName === 'first') {
+        const imageList = this.$refs['image-list']
+        // console.log(imageList.selected)
+        const selected = imageList.selected
+
+        if (selected === null) {
+          this.$message('请选择封面照片')
+          return
+        }
+        //关闭对话框
+        this.dialogVisible = false
+        // 修改父组件
+        this.$emit('input', imageList.images[selected].url)
       }
     },
   },

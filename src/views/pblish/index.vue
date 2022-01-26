@@ -41,11 +41,16 @@
           <!-- 文章封面组件 -->
           <!-- 注意 如果想要在事件处理自定义传参后得到原来的那个事件本身用 $event  -->
           <template v-if="article.cover.type > 0">
-            <UploadCover
+            <!-- <UploadCover
               v-for="(cover, index) in article.cover.type"
               :key="cover"
               :cover-image="article.cover.images[index]"
               @update-cover="onUpdateCover(index, $event)"
+            ></UploadCover> -->
+            <UploadCover
+              v-for="(cover, index) in article.cover.type"
+              :key="cover"
+              v-model="article.cover.images[index]"
             ></UploadCover>
           </template>
         </el-form-item>
@@ -129,7 +134,7 @@ export default {
         content: '',
         //封面类型后端要求对象
         cover: {
-          type: 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
+          type: 1, // 封面类型 -1:自动，0-无图，1-1张，3-3张
           images: [], //类型
         },
         // 文章所属频道id
